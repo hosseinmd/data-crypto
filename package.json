@@ -1,0 +1,40 @@
+{
+  "name": "data-crypto",
+  "version": "1.0.0",
+  "description": "encryption algorithms",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hosseinmd/data-crypto.git"
+  },
+  "keywords": [
+    "Des",
+    "pinblock",
+    "encryption",
+    "data-crypto",
+    "cipherjs",    
+    "cipher",
+    "algorithms",
+    "decryption",
+    "decrypt",
+    "encrypt",
+    "crypto",
+    "javascript",
+    "javascript-library",
+    "library",
+    "hossein",
+    "mohammadi"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hosseinmd/data-crypto/issues"
+  },
+  "homepage": "https://github.com/hosseinmd/data-crypto#readme",
+  "devDependencies": {
+    "jest": "^24.7.1"
+  }
+}
