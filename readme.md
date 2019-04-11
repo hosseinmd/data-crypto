@@ -20,14 +20,14 @@ yarn add data-crypto
 import { des,pinBlock } from "data-crypto";
 //or
 const { des, pinBlock } = require("data-crypto");
-...
+
 const keyhex = "abd219bc6c15181a";
 const text= "plain text"
 
-const data-crypto = des.encrypt(text, keyhex);
-...
-const decrypted = des.decrypt(data-crypto, keyhex);
-...
+const cipher = des.encrypt(text, keyhex);
+
+const decrypted = des.decrypt(cipher, keyhex);
+
 const pan = "6819841515647280";
 const pin = "123464420";
 const pinXorPan = pinBlock(pan, pin);
