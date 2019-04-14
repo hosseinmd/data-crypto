@@ -4,13 +4,13 @@ function pinBlock(PAN, PIN) {
   const PANLen = PAN.length;
   const PINLen = PIN.length;
   const code = [[0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff], []];
-  const index = PANLen - 13; 
+  const index = PANLen - 13;
   code[0][0] = PINLen;
-  for (let i = 0; i < PINLen / 2; i++)
+  for (let i = 0; i < parseInt(PINLen / 2); i++)
     code[0][i + 1] = parseInt(PIN[2 * i]) * 16 + parseInt(PIN[2 * i + 1]);
 
   if (PINLen % 2 != 0)
-    code[0][PINLen / 2 + 1] = parseInt(PIN[PINLen - 1]) * 16 + 15;
+    code[0][parseInt(PINLen / 2) + 1] = parseInt(PIN[PINLen - 1]) * 16 + 15;
 
   code[1][0] = 0;
   code[1][1] = 0;
