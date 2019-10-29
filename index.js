@@ -4,6 +4,7 @@ const {
   pinBlockFormat0,
   pinBlockFormat1,
   pinBlockFormat2,
+  pinBlockFormat3,
 } = require("./src/pinBlock");
 
 module.exports = {
@@ -12,4 +13,5 @@ module.exports = {
   pinBlockFormat0,
   pinBlockFormat1,
   pinBlockFormat2,
+  pinBlockFormat3,
 };

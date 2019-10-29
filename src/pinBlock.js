@@ -1,4 +1,9 @@
-const { numToHex, randomHex } = require("./utils");
+const {
+  numToHex,
+  randomHexNibble,
+  stringReplaceAt,
+  randomIntFromInterval,
+} = require("./utils");
 
 /**
  * @deprecated please use pinBlockFormat0
@@ -53,7 +58,7 @@ function pinBlockFormat1(PIN) {
   let code = "1" + PINLen.toString(16) + PIN;
 
   for (let i = code.length; i < 16; i++) {
-    code = code.concat(randomHex());
+    code = code.concat(randomHexNibble());
   }
 
   return code.toUpperCase();
@@ -72,9 +77,39 @@ function pinBlockFormat2(PIN) {
   return code.toUpperCase();
 }
 
+/**
+ * ISO 9564-1: 2002 Format 3. . `ISO-3`
+ * @param {string} PAN 16 digits
+ * @param {string} PIN supports a PIN from 4 to 12 digits in length.A PIN that is longer than 12 digits is truncated on the right.
+ * @returns {string}
+ */
+function pinBlockFormat3(PAN, PIN) {
+  const PINLen = PIN.length;
+
+  let preparedPIN = "3" + PINLen.toString(16) + PIN;
+
+  for (let i = preparedPIN.length; i < 16; i++) {
+    const randomHexBetween10To15 = randomIntFromInterval(10, 15).toString(16);
+    preparedPIN = preparedPIN.concat(randomHexBetween10To15);
+  }
+
+  let preparedPAN = stringReplaceAt(PAN, 0, "0000");
+
+  let clearPINblock = "";
+  for (let i = 0; i < 16; i += 2) {
+    let firstHex = parseInt(preparedPIN.substr(i, 2), 16);
+    let secondHex = parseInt(preparedPAN.substr(i, 2), 16);
+
+    clearPINblock = clearPINblock.concat(numToHex(firstHex ^ secondHex));
+  }
+
+  return clearPINblock.toUpperCase();
+}
+
 module.exports = {
   pinBlock,
   pinBlockFormat0,
   pinBlockFormat1,
   pinBlockFormat2,
+  pinBlockFormat3,
 };

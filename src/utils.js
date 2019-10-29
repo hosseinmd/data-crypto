@@ -82,8 +82,19 @@ var numToHex = function(num) {
   return hex;
 };
 
-function randomHex() {
-  return Math.floor(Math.random() * 16).toString(16);
+function randomHexNibble() {
+  return randomIntFromInterval(0, 15).toString(16);
+}
+
+function randomIntFromInterval(min, max) {
+  // min and max included
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
+function stringReplaceAt(str, index, replacement) {
+  return (
+    str.substr(0, index) + replacement + str.substr(index + replacement.length)
+  );
 }
 
 module.exports = {
@@ -92,5 +103,7 @@ module.exports = {
   permute,
   bin2hex,
   hex2bin,
-  randomHex,
+  randomHexNibble,
+  stringReplaceAt,
+  randomIntFromInterval,
 };
