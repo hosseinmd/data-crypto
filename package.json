@@ -4,7 +4,7 @@
   "description": "encryption algorithms",
   "main": "index.js",
   "scripts": {
-    "test": "node index.test.js"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
