@@ -91,12 +91,6 @@ function randomIntFromInterval(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function stringReplaceAt(str, index, replacement) {
-  return (
-    str.substr(0, index) + replacement + str.substr(index + replacement.length)
-  );
-}
-
 module.exports = {
   numToHex,
   xor_,
@@ -104,6 +98,5 @@ module.exports = {
   bin2hex,
   hex2bin,
   randomHexNibble,
-  stringReplaceAt,
   randomIntFromInterval,
 };
