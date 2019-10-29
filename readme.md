@@ -48,4 +48,7 @@ pinBlockFormat1(pin);
 
 // ISO-2
 pinBlockFormat2(pin);
+
+// ISO-3
+pinBlockFormat3(pan, pin);
 ```
