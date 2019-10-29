@@ -1,7 +1,13 @@
 const des = require("./src/des");
-const pinBlock = require("./src/pinBlock");
+const {
+  pinBlock,
+  pinBlockFormat0,
+  pinBlockFormat1,
+} = require("./src/pinBlock");
 
 module.exports = {
   des,
-  pinBlock
+  pinBlock,
+  pinBlockFormat0,
+  pinBlockFormat1,
 };

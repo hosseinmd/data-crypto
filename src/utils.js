@@ -81,10 +81,16 @@ var numToHex = function(num) {
   }
   return hex;
 };
+
+function randomHex() {
+  return Math.floor(Math.random() * 16).toString(16);
+}
+
 module.exports = {
   numToHex,
   xor_,
   permute,
   bin2hex,
-  hex2bin
+  hex2bin,
+  randomHex,
 };
