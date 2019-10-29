@@ -56,9 +56,25 @@ function pinBlockFormat1(PIN) {
     code = code.concat(randomHex());
   }
 
-  return code;
+  return code.toUpperCase();
 }
 
-exports.pinBlock = pinBlock;
-exports.pinBlockFormat0 = pinBlockFormat0;
-exports.pinBlockFormat1 = pinBlockFormat1;
+/**
+ * ISO 9564-3: 2003 Format 2. `ISO-2` is for local use with off-line systems only.
+ * @param {string} PIN supports a PIN from 4 to 12 digits in length. A PIN that is longer than 12 digits is truncated on the right.
+ * @returns {string}
+ */
+function pinBlockFormat2(PIN) {
+  const PINLen = PIN.length;
+
+  let code = "2" + PINLen.toString(16) + PIN.padEnd(14, "F");
+
+  return code.toUpperCase();
+}
+
+module.exports = {
+  pinBlock,
+  pinBlockFormat0,
+  pinBlockFormat1,
+  pinBlockFormat2,
+};

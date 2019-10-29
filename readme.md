@@ -40,9 +40,12 @@ const decrypted = des.decrypt(cipher, keyhex);
 ```js
 const pan = "6819841515647280";
 const pin = "123464420";
-// iso-0
+// ISO-0
 pinBlockFormat0(pan, pin);
 
-// iso-1
+// ISO-1
 pinBlockFormat1(pin);
+
+// ISO-2
+pinBlockFormat2(pin);
 ```
