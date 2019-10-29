@@ -1,6 +1,6 @@
 {
   "name": "data-crypto",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "encryption algorithms",
   "main": "index.js",
   "scripts": {
@@ -15,7 +15,7 @@
     "pinblock",
     "encryption",
     "data-crypto",
-    "cipherjs",    
+    "cipherjs",
     "cipher",
     "algorithms",
     "decryption",
