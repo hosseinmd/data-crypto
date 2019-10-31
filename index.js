@@ -1,4 +1,4 @@
-const des = require("./src/des");
+const Des = require("./src/des");
 const {
   pinBlock,
   pinBlockFormat0,
@@ -8,7 +8,9 @@ const {
 } = require("./src/pinBlock");
 
 module.exports = {
-  des,
+  /** @deprecated use Des  */
+  des: Des,
+  Des,
   pinBlock,
   pinBlockFormat0,
   pinBlockFormat1,

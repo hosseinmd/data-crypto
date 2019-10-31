@@ -70,7 +70,7 @@ module.exports = function getRk(keyHex) {
     28,
     20,
     12,
-    4
+    4,
   ];
   const _KEY_COMP = [
     14,
@@ -120,7 +120,7 @@ module.exports = function getRk(keyHex) {
     50,
     36,
     29,
-    32
+    32,
   ];
   const _SHIFT_TABLE = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
 
