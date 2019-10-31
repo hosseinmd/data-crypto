@@ -4,7 +4,8 @@
 
 # data-crypto
 
-encryption algorithms
+Standard Encryption Algorithms made with Pure Javascript without any dependencies
+Compatible with all environments (react-native, reactjs, nodejs, angular, ... )
 
 ## install
 
@@ -19,9 +20,9 @@ yarn add data-crypto
 ### import
 
 ```javascript
-import { Des, pinBlockFormat0, pinBlockFormat1 } from "data-crypto";
+import { Des, TripleDes, pinBlock, pinBlockFormat0 } from "data-crypto";
 //or
-const { Des, pinBlockFormat0, pinBlockFormat1 } = require("data-crypto");
+const { Des, TripleDes, pinBlock, pinBlockFormat0 } = require("data-crypto");
 ```
 
 ### DES crypto
@@ -35,7 +36,20 @@ const cipher = Des.encrypt(text, keyhex);
 const decrypted = Des.decrypt(cipher, keyhex);
 ```
 
-### pin Block
+### Triple DES crypto
+
+The Data Encryption Standard’s(DES) is no longer considered adequate in the face of modern cryptanalytic techniques and supercomputing power. However, an adapted version of DES, Triple DES (3DES), produces a more secure encryption.
+
+```js
+const keyhex = "abd21abd219bc6c15181a9bc6cabd219bc6c15181a15181a";
+const text = "plain text";
+
+const cipher = TripleDes.encrypt(text, keyhex);
+
+const decrypted = TripleDes.decrypt(cipher, keyhex);
+```
+
+### Pin Block
 
 ISO 9564-1 Format 0. An `ISO-0` PIN block format is equivalent to the `ANSI X9.8`,`VISA-1`,
 and `ECI-1` PIN block formats and is similar to a VISA-4 PIN block format.
