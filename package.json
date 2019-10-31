@@ -12,21 +12,18 @@
   },
   "keywords": [
     "Des",
-    "pinblock",
-    "encryption",
+    "pin block",
     "data-crypto",
     "cipherjs",
     "cipher",
-    "algorithms",
-    "decryption",
+    "ISO 9564",
+    "ANSI X9.8",
+    "VISA-1",
     "decrypt",
     "encrypt",
     "crypto",
     "javascript",
-    "javascript-library",
-    "library",
-    "hossein",
-    "mohammadi"
+    "hossein mohammadi"
   ],
   "author": "",
   "license": "ISC",
@@ -35,6 +32,7 @@
   },
   "homepage": "https://github.com/hosseinmd/data-crypto#readme",
   "devDependencies": {
+    "prettier": "1.18.2",
     "jest": "^24.7.1"
   }
 }
