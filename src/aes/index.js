@@ -600,7 +600,7 @@ function pkcs7strip(data) {
 // Exporting
 
 // The block cipher
-const aesjs = {
+const Aes = {
   AES: AES,
   Counter: Counter,
 
@@ -631,6 +631,6 @@ const aesjs = {
   },
 };
 
-module.exports = aesjs;
+module.exports = Aes;
 
 // global.Buffer = global.Buffer || require('buffer').Buffer

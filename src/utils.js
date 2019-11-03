@@ -91,17 +91,17 @@ function randomIntFromInterval(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
-function checkInt(value) {
-  return parseInt(value) === value;
-}
-
 function checkInts(arrayish) {
-  if (!checkInt(arrayish.length)) {
+  if (!Number.isInteger(arrayish.length)) {
     return false;
   }
 
   for (let i = 0; i < arrayish.length; i++) {
-    if (!checkInt(arrayish[i]) || arrayish[i] < 0 || arrayish[i] > 255) {
+    if (
+      !Number.isInteger(arrayish[i]) ||
+      arrayish[i] < 0 ||
+      arrayish[i] > 255
+    ) {
       return false;
     }
   }
@@ -133,7 +133,7 @@ function coerceArray(arg, copy) {
   }
 
   // Something else, but behaves like an array (maybe a Buffer? Arguments?)
-  if (checkInt(arg.length) && checkInts(arg)) {
+  if (Number.isInteger(arg.length) && checkInts(arg)) {
     return new Uint8Array(arg);
   }
 
@@ -151,6 +151,7 @@ function copyArray(
   sourceStart,
   sourceEnd,
 ) {
+  
   if (sourceStart != null || sourceEnd != null) {
     if (sourceArray.slice) {
       sourceArray = sourceArray.slice(sourceStart, sourceEnd);
@@ -173,7 +174,6 @@ module.exports = {
   hex2bin,
   randomHexNibble,
   randomIntFromInterval,
-  checkInt,
   checkInts,
   coerceArray,
   createArray,
