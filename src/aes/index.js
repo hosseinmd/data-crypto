@@ -1,5 +1,6 @@
 "use strict";
-const { coerceArray, createArray, copyArray } = require("../utils");
+const { coerceArray, createArray, copyArray,  convertUtf8,
+    convertToInt32, } = require("../utils");
 const {
   numberOfRounds,
   rcon,
@@ -18,94 +19,6 @@ const {
   U3,
   U4,
 } = require("./consts");
-
-const convertUtf8 = {
-  toBytes(text) {
-    const result = [],
-      i = 0;
-    text = encodeURI(text);
-    while (i < text.length) {
-      const c = text.charCodeAt(i++);
-
-      // if it is a % sign, encode the following 2 bytes as a hex value
-      if (c === 37) {
-        result.push(parseInt(text.substr(i, 2), 16));
-        i += 2;
-
-        // otherwise, just the actual byte
-      } else {
-        result.push(c);
-      }
-    }
-
-    return coerceArray(result);
-  },
-
-  fromBytes(bytes) {
-    const result = [],
-      i = 0;
-
-    while (i < bytes.length) {
-      const c = bytes[i];
-
-      if (c < 128) {
-        result.push(String.fromCharCode(c));
-        i++;
-      } else if (c > 191 && c < 224) {
-        result.push(
-          String.fromCharCode(((c & 0x1f) << 6) | (bytes[i + 1] & 0x3f)),
-        );
-        i += 2;
-      } else {
-        result.push(
-          String.fromCharCode(
-            ((c & 0x0f) << 12) |
-              ((bytes[i + 1] & 0x3f) << 6) |
-              (bytes[i + 2] & 0x3f),
-          ),
-        );
-        i += 3;
-      }
-    }
-
-    return result.join("");
-  },
-};
-
-const convertHex = {
-  toBytes(text) {
-    const result = [];
-    for (let i = 0; i < text.length; i += 2) {
-      result.push(parseInt(text.substr(i, 2), 16));
-    }
-
-    return result;
-  },
-  // http://ixti.net/development/javascript/2011/11/11/base64-encodedecode-of-utf8-in-browser-with-js.html
-  Hex: "0123456789abcdef",
-
-  fromBytes(bytes) {
-    const result = [];
-    for (let i = 0; i < bytes.length; i++) {
-      const v = bytes[i];
-      result.push(Hex[(v & 0xf0) >> 4] + Hex[v & 0x0f]);
-    }
-    return result.join("");
-  },
-};
-
-function convertToInt32(bytes) {
-  const result = [];
-  for (let i = 0; i < bytes.length; i += 4) {
-    result.push(
-      (bytes[i] << 24) |
-        (bytes[i + 1] << 16) |
-        (bytes[i + 2] << 8) |
-        bytes[i + 3],
-    );
-  }
-  return result;
-}
 
 class AES {
   constructor(key) {

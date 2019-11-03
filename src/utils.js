@@ -1,58 +1,132 @@
-function hex2bin(s) {
-  // hexadecimal to binary conversion
-  s = s.toUpperCase();
-  let mp = {};
-  mp["0"] = "0000";
-  mp["1"] = "0001";
-  mp["2"] = "0010";
-  mp["3"] = "0011";
-  mp["4"] = "0100";
-  mp["5"] = "0101";
-  mp["6"] = "0110";
-  mp["7"] = "0111";
-  mp["8"] = "1000";
-  mp["9"] = "1001";
-  mp["A"] = "1010";
-  mp["B"] = "1011";
-  mp["C"] = "1100";
-  mp["D"] = "1101";
-  mp["E"] = "1110";
-  mp["F"] = "1111";
-  let bin = "";
-  for (let i = 0; i < s.length; i++) {
-    bin += mp[s[i]];
+/**
+ * Converts hexadecimal code to binary code
+ * @param {string} A string containing single digit hexadecimal numbers  e.g. '1d'
+ * @return {string} A string containing binary numbers e.g. '00011101'
+ */
+function hexToBinary(text) {
+  let result = "";
+
+  for (let nibble of text) {
+    result = result.concat(
+      parseInt(nibble, 16)
+        .toString(2)
+        .padStart(4, "0"),
+    );
   }
-  return bin;
+
+  return result;
 }
-function bin2hex(s) {
-  // binary to hexadecimal conversion
-  const mp = {};
-  mp["0000"] = "0";
-  mp["0001"] = "1";
-  mp["0010"] = "2";
-  mp["0011"] = "3";
-  mp["0100"] = "4";
-  mp["0101"] = "5";
-  mp["0110"] = "6";
-  mp["0111"] = "7";
-  mp["1000"] = "8";
-  mp["1001"] = "9";
-  mp["1010"] = "A";
-  mp["1011"] = "B";
-  mp["1100"] = "C";
-  mp["1101"] = "D";
-  mp["1110"] = "E";
-  mp["1111"] = "F";
-  let hex = "";
-  for (let i = 0; i < s.length; i += 4) {
-    let ch = "";
-    ch += s[i];
-    ch += s[i + 1];
-    ch += s[i + 2];
-    ch += s[i + 3];
-    hex += mp[ch];
+/**
+ * Converts binary code to hexadecimal string
+ * @param {string} binaryString A string containing binary numbers e.g. '00011101'
+ * @return {string} A string containing the hexadecimal numbers e.g. '1d'
+ */
+function binaryToHex(text) {
+  let result = "";
+  for (let i = 0; i < text.length; i += 4) {
+    // Grab a chunk of 4 bits
+    const bytes = text.substr(i, 4);
+
+    // Convert to decimal then hexadecimal
+    const decimal = parseInt(bytes, 2);
+    const hex = decimal.toString(16);
+
+    // Uppercase all the letters and append to output
+    result = result.concat(hex.toUpperCase());
   }
-  return hex;
+
+  return result;
+}
+
+const convertUtf8 = {
+  toBytes(text) {
+    const result = [],
+      i = 0;
+    text = encodeURI(text);
+    while (i < text.length) {
+      const c = text.charCodeAt(i++);
+
+      // if it is a % sign, encode the following 2 bytes as a hex value
+      if (c === 37) {
+        result.push(parseInt(text.substr(i, 2), 16));
+        i += 2;
+
+        // otherwise, just the actual byte
+      } else {
+        result.push(c);
+      }
+    }
+
+    return coerceArray(result);
+  },
+
+  fromBytes(bytes) {
+    const result = [],
+      i = 0;
+
+    while (i < bytes.length) {
+      const c = bytes[i];
+
+      if (c < 128) {
+        result.push(String.fromCharCode(c));
+        i++;
+      } else if (c > 191 && c < 224) {
+        result.push(
+          String.fromCharCode(((c & 0x1f) << 6) | (bytes[i + 1] & 0x3f)),
+        );
+        i += 2;
+      } else {
+        result.push(
+          String.fromCharCode(
+            ((c & 0x0f) << 12) |
+              ((bytes[i + 1] & 0x3f) << 6) |
+              (bytes[i + 2] & 0x3f),
+          ),
+        );
+        i += 3;
+      }
+    }
+
+    return result.join("");
+  },
+};
+
+function hexToBytes(text) {
+  const result = [];
+  for (let i = 0; i < text.length; i += 2) {
+    result.push(parseInt(text.substr(i, 2), 16));
+  }
+
+  return result;
+}
+// http://ixti.net/development/javascript/2011/11/11/base64-encodedecode-of-utf8-in-browser-with-js.html
+
+function bytesToHex(bytes) {
+  const result = [];
+  for (let i = 0; i < bytes.length; i++) {
+    // Convert to decimal then hexadecimal
+    const decimal = parseInt(bytes[i], 2);
+    const hex = decimal.toString(16);
+
+    // Uppercase all the letters and append to output
+    result = result.concat();
+
+    result.push(hex.toUpperCase());
+  }
+  return result.join("");
+}
+
+function convertToInt32(bytes) {
+  const result = [];
+  for (let i = 0; i < bytes.length; i += 4) {
+    result.push(
+      (bytes[i] << 24) |
+        (bytes[i + 1] << 16) |
+        (bytes[i + 2] << 8) |
+        bytes[i + 3],
+    );
+  }
+  return result;
 }
 
 function permute(k, arr, n) {
@@ -74,20 +148,23 @@ function xor_(a, b) {
   }
   return ans;
 }
-var numToHex = function(num) {
-  var hex = Number(num).toString(16);
-  if (hex.length < 2) {
-    hex = "0" + hex;
-  }
-  return hex;
-};
+
+/**
+ * Convert number to hexadecimal
+ * @param {number} num Decimal
+ * @returns {string} Hexadecimal
+ */
+function numToHex(num) {
+  return Number(num)
+    .toString(16)
+    .padStart(2, "0");
+}
 
 function randomHexNibble() {
   return randomIntFromInterval(0, 15).toString(16);
 }
 
 function randomIntFromInterval(min, max) {
-  // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
@@ -151,7 +228,6 @@ function copyArray(
   sourceStart,
   sourceEnd,
 ) {
-  
   if (sourceStart != null || sourceEnd != null) {
     if (sourceArray.slice) {
       sourceArray = sourceArray.slice(sourceStart, sourceEnd);
@@ -170,8 +246,12 @@ module.exports = {
   numToHex,
   xor_,
   permute,
-  bin2hex,
-  hex2bin,
+  binaryToHex,
+  hexToBinary,
+  convertUtf8,
+  hexToBytes,
+  bytesToHex,
+  convertToInt32,
   randomHexNibble,
   randomIntFromInterval,
   checkInts,

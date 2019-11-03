@@ -1,4 +1,4 @@
-const { permute, hex2bin } = require("./utils");
+const { permute, hexToBinary } = require("./utils");
 
 function shift_left(k, shifts) {
   let s = "";
@@ -124,7 +124,7 @@ module.exports = function getRk(keyHex) {
   ];
   const _SHIFT_TABLE = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
 
-  key = hex2bin(keyHex);
+  key = hexToBinary(keyHex);
 
   //Parity bit drop table
 

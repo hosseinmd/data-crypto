@@ -1,9 +1,9 @@
-const { xor_, permute, bin2hex, hex2bin } = require("./utils");
+const { xor_, permute, binaryToHex, hexToBinary } = require("./utils");
 const getRk = require("./getRk");
 
 function _encrypt(pt, rkb) {
   //Hexadecimal to binary
-  pt = hex2bin(pt);
+  pt = hexToBinary(pt);
 
   //Initial Permutation Table
   const initial_perm = [
@@ -332,7 +332,7 @@ function _encrypt(pt, rkb) {
   ];
 
   //Final Permutation
-  const cipher = bin2hex(permute(combine, final_perm, 64));
+  const cipher = binaryToHex(permute(combine, final_perm, 64));
   return cipher;
 }
 
