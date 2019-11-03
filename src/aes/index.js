@@ -1,6 +1,11 @@
 "use strict";
-const { coerceArray, createArray, copyArray,  convertUtf8,
-    convertToInt32, } = require("../utils");
+const {
+  coerceArray,
+  createArray,
+  copyArray,
+  convertUtf8,
+  convertToInt32,
+} = require("../utils");
 const {
   numberOfRounds,
   rcon,
@@ -526,7 +531,6 @@ const Aes = {
   },
 
   utils: {
-    hex: convertHex,
     utf8: convertUtf8,
   },
 
