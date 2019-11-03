@@ -1,5 +1,6 @@
 const Des = require("./src/des");
 const TripleDes = require("./src/tripleDes");
+const Aes = require("./src/aes");
 const {
   pinBlock,
   pinBlockFormat0,
@@ -12,6 +13,7 @@ module.exports = {
   /** @deprecated use Des  */
   des: Des,
   Des,
+  Aes,
   TripleDes,
   pinBlock,
   pinBlockFormat0,
