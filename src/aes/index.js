@@ -24,6 +24,10 @@ const {
   U4,
 } = require("./consts");
 
+/**
+ * @typedef {Buffer | Array | Uint8Array} Bytes
+ */
+
 class AES {
   constructor(key) {
     if (!(this instanceof AES)) {
@@ -441,6 +445,11 @@ class Counter {
  *  Mode Of Operation - Counter (CTR)
  */
 class ModeOfOperationCTR {
+  /**
+   *
+   * @param {Bytes} key
+   * @param {Counterƒ} [counter]
+   */
   constructor(key, counter) {
     if (!(this instanceof ModeOfOperationCTR)) {
       throw Error("AES must be instanitated with `new`");
@@ -455,6 +464,10 @@ class ModeOfOperationCTR {
     this._remainingCounterIndex = 16;
     this._aes = new AES(key);
   }
+  /**
+   * @param {Bytes} plaintext
+   * @returns {Uint8Array}
+   */
   encrypt(plaintext) {
     const encrypted = coerceArray(plaintext, true);
     for (let i = 0; i < encrypted.length; i++) {
@@ -467,7 +480,10 @@ class ModeOfOperationCTR {
     }
     return encrypted;
   }
-  // Decryption is symetric
+  /**
+   * @param {Bytes} plaintext
+   * @returns {Uint8Array}
+   */
   decrypt(plaintext) {
     return this.encrypt(plaintext);
   }
