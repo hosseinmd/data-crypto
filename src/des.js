@@ -1,4 +1,4 @@
-const { xor_, permute, binaryToHex, hexToBinary } = require("./utils");
+const { xorBinary, permute, binaryToHex, hexToBinary } = require("./utils");
 const getRk = require("./getRk");
 
 function _encrypt(pt, rkb) {
@@ -225,7 +225,7 @@ function _encrypt(pt, rkb) {
     let right_expanded = permute(right, exp_d, 48);
 
     //XOR RoundKey[i] and right_expanded
-    let x = xor_(rkb[i], right_expanded);
+    let x = xorBinary(rkb[i], right_expanded);
 
     //S-boxes
     let op = "";
@@ -249,7 +249,7 @@ function _encrypt(pt, rkb) {
     //Straight D-box
     op = permute(op, per, 32);
     //XOR left and op
-    x = xor_(op, left);
+    x = xorBinary(op, left);
     left = x;
 
     //Swapper

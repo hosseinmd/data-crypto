@@ -115,8 +115,8 @@ const convertUtf8 = {
  * XOR two String or buffer
  * @param {string | Buffer} first  String or Buffer
  * @param {string | Buffer} second String or Buffer
- * @param {BufferEncoding}
- * @returns {string}
+ * @param {BufferEncoding} encode defualt is "hex"
+ * @returns {Buffer}
  */
 function xor(first, second, encode = "hex") {
   const fistByteBuffer = Buffer.isBuffer(first)
@@ -124,13 +124,13 @@ function xor(first, second, encode = "hex") {
     : Buffer.from(first, encode);
   const secondByteBuffer = Buffer.isBuffer(second)
     ? second
-    : Buffer.from(second,  encode);
+    : Buffer.from(second, encode);
 
-  let result = "";
+  let result = Buffer.allocUnsafe(fistByteBuffer.length);
   for (let i = 0; i < fistByteBuffer.length; i++) {
     const firstByte = fistByteBuffer[i];
     const secondByte = secondByteBuffer[i];
-    result = result.concat(byteToHex(firstByte ^ secondByte));
+    result.fill(firstByte ^ secondByte, i);
   }
   return result;
 }
@@ -169,7 +169,7 @@ function permute(k, arr, n) {
   return per;
 }
 
-function xor_(a, b) {
+function xorBinary(a, b) {
   let ans = "";
   for (let i = 0; i < a.length; i++) {
     if (a[i] == b[i]) {
@@ -264,7 +264,7 @@ function copyArray(
 }
 
 module.exports = {
-  xor_,
+  xorBinary,
   xor,
   permute,
   binaryToHex,

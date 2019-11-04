@@ -1,8 +1,4 @@
-const {
-  randomHexNibble,
-  randomIntFromInterval,
-  xor,
-} = require("./utils");
+const { randomHexNibble, randomIntFromInterval, xor } = require("./utils");
 
 /**
  * @deprecated please use pinBlockFormat0
@@ -27,7 +23,7 @@ function pinBlockFormat0(PAN, PIN) {
 
   const clearPINblock = xor(preparedPIN, preparedPAN);
 
-  return clearPINblock;
+  return clearPINblock.toString("hex").toUpperCase();
 }
 
 /**
@@ -80,7 +76,7 @@ function pinBlockFormat3(PAN, PIN) {
 
   const clearPINblock = xor(preparedPIN, preparedPAN);
 
-  return clearPINblock;
+  return clearPINblock.toString("hex").toUpperCase();
 }
 
 module.exports = {
