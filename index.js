@@ -1,7 +1,11 @@
 const Des = require("./src/des");
 const TripleDes = require("./src/tripleDes");
 const Aes = require("./src/aes");
-const { hexToBinary, binaryToHex } = require("./src/utils");
+const {
+  hexToBinary,
+  binaryToHex,
+  bytesToHex,
+} = require("./src/utils");
 const {
   pinBlock,
   pinBlockFormat0,
@@ -23,4 +27,5 @@ module.exports = {
   pinBlockFormat3,
   hexToBinary,
   binaryToHex,
+  bytesToHex,
 };

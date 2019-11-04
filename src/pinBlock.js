@@ -1,4 +1,8 @@
-const { numToHex, randomHexNibble, randomIntFromInterval } = require("./utils");
+const {
+  randomHexNibble,
+  randomIntFromInterval,
+  xor,
+} = require("./utils");
 
 /**
  * @deprecated please use pinBlockFormat0
@@ -17,19 +21,13 @@ function pinBlock(PAN, PIN) {
 function pinBlockFormat0(PAN, PIN) {
   const PINLen = PIN.length;
 
-  let preparedPIN = "0" + PINLen.toString(16) + PIN.padEnd(14, "F");
+  const preparedPIN = "0" + PINLen.toString(16) + PIN.padEnd(14, "F");
 
-  let preparedPAN = PAN.slice(3, 15).padStart(16, "0");
+  const preparedPAN = PAN.slice(3, 15).padStart(16, "0");
 
-  let clearPINblock = "";
-  for (let i = 0; i < 16; i += 2) {
-    let firstHex = parseInt(preparedPIN.substr(i, 2), 16);
-    let secondHex = parseInt(preparedPAN.substr(i, 2), 16);
+  const clearPINblock = xor(preparedPIN, preparedPAN);
 
-    clearPINblock = clearPINblock.concat(numToHex(firstHex ^ secondHex));
-  }
-
-  return clearPINblock.toUpperCase();
+  return clearPINblock;
 }
 
 /**
@@ -78,17 +76,11 @@ function pinBlockFormat3(PAN, PIN) {
     preparedPIN = preparedPIN.concat(randomHexBetween10To15);
   }
 
-  let preparedPAN = PAN.slice(3, 15).padStart(16, "0");
+  const preparedPAN = PAN.slice(3, 15).padStart(16, "0");
 
-  let clearPINblock = "";
-  for (let i = 0; i < 16; i += 2) {
-    let firstHex = parseInt(preparedPIN.substr(i, 2), 16);
-    let secondHex = parseInt(preparedPAN.substr(i, 2), 16);
+  const clearPINblock = xor(preparedPIN, preparedPAN);
 
-    clearPINblock = clearPINblock.concat(numToHex(firstHex ^ secondHex));
-  }
-
-  return clearPINblock.toUpperCase();
+  return clearPINblock;
 }
 
 module.exports = {

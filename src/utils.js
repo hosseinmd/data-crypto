@@ -1,4 +1,25 @@
 /**
+ * Convert a byte to a hex string
+ * @param {number} byte
+ * @returns {string}
+ */
+function byteToHex(byte) {
+  return parseInt(byte)
+    .toString(16)
+    .padStart(2, "0")
+    .toUpperCase();
+}
+
+/**
+ * Convert a hex to a byte
+ * @param {string} hex
+ * @returns {number}
+ */
+function hexToByte(hex) {
+  return parseInt(hex, 16);
+}
+
+/**
  * Converts hexadecimal code to binary code
  * @param {string} A string containing single digit hexadecimal numbers  e.g. '1d'
  * @return {string} A string containing binary numbers e.g. '00011101'
@@ -90,30 +111,41 @@ const convertUtf8 = {
     return result.join("");
   },
 };
+/**
+ * XOR two String or buffer
+ * @param {string | Buffer} first  String or Buffer
+ * @param {string | Buffer} second String or Buffer
+ * @param {BufferEncoding}
+ * @returns {string}
+ */
+function xor(first, second, encode = "hex") {
+  const fistByteBuffer = Buffer.isBuffer(first)
+    ? first
+    : Buffer.from(first, encode);
+  const secondByteBuffer = Buffer.isBuffer(second)
+    ? second
+    : Buffer.from(second,  encode);
 
-function hexToBytes(text) {
-  const result = [];
-  for (let i = 0; i < text.length; i += 2) {
-    result.push(parseInt(text.substr(i, 2), 16));
+  let result = "";
+  for (let i = 0; i < fistByteBuffer.length; i++) {
+    const firstByte = fistByteBuffer[i];
+    const secondByte = secondByteBuffer[i];
+    result = result.concat(byteToHex(firstByte ^ secondByte));
   }
-
   return result;
 }
-// http://ixti.net/development/javascript/2011/11/11/base64-encodedecode-of-utf8-in-browser-with-js.html
 
+/**
+ * Convert a byte array to a hex string
+ * @param {Array<number>} bytes
+ * @returns {string}
+ */
 function bytesToHex(bytes) {
-  const result = [];
+  let result = "";
   for (let i = 0; i < bytes.length; i++) {
-    // Convert to decimal then hexadecimal
-    const decimal = parseInt(bytes[i], 2);
-    const hex = decimal.toString(16);
-
-    // Uppercase all the letters and append to output
-    result = result.concat();
-
-    result.push(hex.toUpperCase());
+    result = result.concat(byteToHex(bytes[i]));
   }
-  return result.join("");
+  return result;
 }
 
 function convertToInt32(bytes) {
@@ -147,17 +179,6 @@ function xor_(a, b) {
     }
   }
   return ans;
-}
-
-/**
- * Convert number to hexadecimal
- * @param {number} num Decimal
- * @returns {string} Hexadecimal
- */
-function numToHex(num) {
-  return Number(num)
-    .toString(16)
-    .padStart(2, "0");
 }
 
 function randomHexNibble() {
@@ -243,14 +264,15 @@ function copyArray(
 }
 
 module.exports = {
-  numToHex,
   xor_,
+  xor,
   permute,
   binaryToHex,
   hexToBinary,
   convertUtf8,
-  hexToBytes,
+  hexToByte,
   bytesToHex,
+  byteToHex,
   convertToInt32,
   randomHexNibble,
   randomIntFromInterval,

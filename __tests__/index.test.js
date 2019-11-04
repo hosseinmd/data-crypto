@@ -6,6 +6,7 @@ test("des crypto", () => {
   var keyhex = "1c1c1c1c1c1c1c1c";
 
   const pinXorPan = pinBlockFormat0(pan, pin);
+  expect(pinXorPan).toBe("0712AC243EA9B8D7");
 
   const cipher = Des.encrypt(pinXorPan, keyhex);
 
@@ -18,7 +19,7 @@ test("triple des crypto", () => {
   var keyhex = "1c1c1c1c1c1c1c11c143545454543434c11c143545454543434";
 
   const cipher = TripleDes.encrypt(pan, keyhex);
-  
+
   const decrypted = TripleDes.decrypt(cipher, keyhex);
   expect(decrypted).toBe(pan);
 });
