@@ -3,7 +3,6 @@ const {
   coerceArray,
   createArray,
   copyArray,
-  convertUtf8,
   convertToInt32,
 } = require("../utils");
 const {
@@ -30,9 +29,7 @@ class AES {
     if (!(this instanceof AES)) {
       throw Error("AES must be instanitated with `new`");
     }
-    Object.defineProperty(this, "key", {
-      value: coerceArray(key, true),
-    });
+    this.key = coerceArray(key, true);
     this._prepare();
   }
   _prepare() {
@@ -528,10 +525,6 @@ const Aes = {
     cfb: ModeOfOperationCFB,
     ofb: ModeOfOperationOFB,
     ctr: ModeOfOperationCTR,
-  },
-
-  utils: {
-    utf8: convertUtf8,
   },
 
   padding: {

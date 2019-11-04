@@ -4,7 +4,6 @@ const Aes = require("./src/aes");
 const {
   hexToBinary,
   binaryToHex,
-  bytesToHex,
 } = require("./src/utils");
 const {
   pinBlock,
@@ -27,5 +26,4 @@ module.exports = {
   pinBlockFormat3,
   hexToBinary,
   binaryToHex,
-  bytesToHex,
 };

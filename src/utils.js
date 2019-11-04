@@ -59,58 +59,6 @@ function binaryToHex(text) {
   return result;
 }
 
-const convertUtf8 = {
-  toBytes(text) {
-    const result = [],
-      i = 0;
-    text = encodeURI(text);
-    while (i < text.length) {
-      const c = text.charCodeAt(i++);
-
-      // if it is a % sign, encode the following 2 bytes as a hex value
-      if (c === 37) {
-        result.push(parseInt(text.substr(i, 2), 16));
-        i += 2;
-
-        // otherwise, just the actual byte
-      } else {
-        result.push(c);
-      }
-    }
-
-    return coerceArray(result);
-  },
-
-  fromBytes(bytes) {
-    const result = [],
-      i = 0;
-
-    while (i < bytes.length) {
-      const c = bytes[i];
-
-      if (c < 128) {
-        result.push(String.fromCharCode(c));
-        i++;
-      } else if (c > 191 && c < 224) {
-        result.push(
-          String.fromCharCode(((c & 0x1f) << 6) | (bytes[i + 1] & 0x3f)),
-        );
-        i += 2;
-      } else {
-        result.push(
-          String.fromCharCode(
-            ((c & 0x0f) << 12) |
-              ((bytes[i + 1] & 0x3f) << 6) |
-              (bytes[i + 2] & 0x3f),
-          ),
-        );
-        i += 3;
-      }
-    }
-
-    return result.join("");
-  },
-};
 /**
  * XOR two String or buffer
  * @param {string | Buffer} first  String or Buffer
@@ -135,18 +83,6 @@ function xor(first, second, encode = "hex") {
   return result;
 }
 
-/**
- * Convert a byte array to a hex string
- * @param {Array<number>} bytes
- * @returns {string}
- */
-function bytesToHex(bytes) {
-  let result = "";
-  for (let i = 0; i < bytes.length; i++) {
-    result = result.concat(byteToHex(bytes[i]));
-  }
-  return result;
-}
 
 function convertToInt32(bytes) {
   const result = [];
@@ -207,6 +143,12 @@ function checkInts(arrayish) {
   return true;
 }
 
+/**
+ * 
+ * @param {Array<number>} arg 
+ * @param {boolean} copy 
+ * @returns {Uint8Array}
+ */
 function coerceArray(arg, copy) {
   // ArrayBuffer view
   if (arg.buffer && arg.name === "Uint8Array") {
@@ -269,9 +211,7 @@ module.exports = {
   permute,
   binaryToHex,
   hexToBinary,
-  convertUtf8,
   hexToByte,
-  bytesToHex,
   byteToHex,
   convertToInt32,
   randomHexNibble,
