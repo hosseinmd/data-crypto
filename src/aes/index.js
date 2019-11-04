@@ -25,10 +25,13 @@ const {
 } = require("./consts");
 
 /**
- * @typedef {Buffer | Array | Uint8Array} Bytes
+ * @typedef {Buffer | number[] | Uint8Array} Bytes
  */
 
 class AES {
+  /**
+   * @param {Bytes} key
+   */
   constructor(key) {
     if (!(this instanceof AES)) {
       throw Error("AES must be instanitated with `new`");
@@ -194,6 +197,9 @@ class AES {
  *  Mode Of Operation - Electonic Codebook (ECB)
  */
 class ModeOfOperationECB {
+  /**
+   * @param {Bytes} key
+   */
   constructor(key) {
     if (!(this instanceof ModeOfOperationECB)) {
       throw Error("AES must be instanitated with `new`");
@@ -202,6 +208,10 @@ class ModeOfOperationECB {
     this.name = "ecb";
     this._aes = new AES(key);
   }
+  /**
+   * @param {Bytes} plaintext
+   * @returns {Uint8Array}
+   */
   encrypt(plaintext) {
     plaintext = coerceArray(plaintext);
     if (plaintext.length % 16 !== 0) {
@@ -216,6 +226,10 @@ class ModeOfOperationECB {
     }
     return ciphertext;
   }
+  /**
+   * @param {Bytes} ciphertext
+   * @returns {Uint8Array}
+   */
   decrypt(ciphertext) {
     ciphertext = coerceArray(ciphertext);
     if (ciphertext.length % 16 !== 0) {
@@ -235,20 +249,26 @@ class ModeOfOperationECB {
  *  Mode Of Operation - Cipher Block Chaining (CBC)
  */
 class ModeOfOperationCBC {
-  constructor(key, iv) {
+  /**
+   * @param {Bytes} key
+   * @param {Array<number>} [iv]
+   */
+  constructor(key, iv = createArray(16)) {
     if (!(this instanceof ModeOfOperationCBC)) {
       throw Error("AES must be instanitated with `new`");
     }
     this.description = "Cipher Block Chaining";
     this.name = "cbc";
-    if (!iv) {
-      iv = createArray(16);
-    } else if (iv.length != 16) {
+    if (iv.length != 16) {
       throw new Error("invalid initialation vector size (must be 16 bytes)");
     }
     this._lastCipherblock = coerceArray(iv, true);
     this._aes = new AES(key);
   }
+  /**
+   * @param {Bytes} plaintext
+   * @returns {Uint8Array}
+   */
   encrypt(plaintext) {
     plaintext = coerceArray(plaintext);
     if (plaintext.length % 16 !== 0) {
@@ -266,6 +286,10 @@ class ModeOfOperationCBC {
     }
     return ciphertext;
   }
+  /**
+   * @param {Bytes} ciphertext
+   * @returns {Uint8Array}
+   */
   decrypt(ciphertext) {
     ciphertext = coerceArray(ciphertext);
     if (ciphertext.length % 16 !== 0) {
@@ -288,24 +312,29 @@ class ModeOfOperationCBC {
  *  Mode Of Operation - Cipher Feedback (CFB)
  */
 class ModeOfOperationCFB {
-  constructor(key, iv, segmentSize) {
+  /**
+   * @param {Bytes} key
+   * @param {Array<number>} [iv]
+   * @param {number} [segmentSize]
+   */
+  constructor(key, iv = createArray(16), segmentSize = 1) {
     if (!(this instanceof ModeOfOperationCFB)) {
       throw Error("AES must be instanitated with `new`");
     }
     this.description = "Cipher Feedback";
     this.name = "cfb";
-    if (!iv) {
-      iv = createArray(16);
-    } else if (iv.length != 16) {
+    if (iv.length != 16) {
       throw new Error("invalid initialation vector size (must be 16 size)");
     }
-    if (!segmentSize) {
-      segmentSize = 1;
-    }
+
     this.segmentSize = segmentSize;
     this._shiftRegister = coerceArray(iv, true);
     this._aes = new AES(key);
   }
+  /**
+   * @param {Bytes} plaintext
+   * @returns {Uint8Array}
+   */
   encrypt(plaintext) {
     if (plaintext.length % this.segmentSize != 0) {
       throw new Error("invalid plaintext size (must be segmentSize bytes)");
@@ -329,6 +358,10 @@ class ModeOfOperationCFB {
     }
     return encrypted;
   }
+  /**
+   * @param {Bytes} ciphertext
+   * @returns {Uint8Array}
+   */
   decrypt(ciphertext) {
     if (ciphertext.length % this.segmentSize != 0) {
       throw new Error("invalid ciphertext size (must be segmentSize bytes)");
@@ -358,6 +391,10 @@ class ModeOfOperationCFB {
  *  Mode Of Operation - Output Feedback (OFB)
  */
 class ModeOfOperationOFB {
+  /**
+   * @param {Bytes} key
+   * @param {Array<number>} [iv]
+   */
   constructor(key, iv) {
     if (!(this instanceof ModeOfOperationOFB)) {
       throw Error("AES must be instanitated with `new`");
@@ -373,6 +410,10 @@ class ModeOfOperationOFB {
     this._lastPrecipherIndex = 16;
     this._aes = new AES(key);
   }
+  /**
+   * @param {Bytes} plaintext
+   * @returns {Uint8Array}
+   */
   encrypt(plaintext) {
     const encrypted = coerceArray(plaintext, true);
     for (let i = 0; i < encrypted.length; i++) {
@@ -384,9 +425,14 @@ class ModeOfOperationOFB {
     }
     return encrypted;
   }
-  // Decryption is symetric
-  decrypt(plaintext) {
-    return this.encrypt(plaintext);
+
+  /**
+   * @param {Bytes} ciphertext
+   * @returns {Uint8Array}
+   */
+  decrypt(ciphertext) {
+    // Decryption is symetric
+    return this.encrypt(ciphertext);
   }
 }
 
@@ -446,9 +492,8 @@ class Counter {
  */
 class ModeOfOperationCTR {
   /**
-   *
    * @param {Bytes} key
-   * @param {Counterƒ} [counter]
+   * @param {Counter} [counter]
    */
   constructor(key, counter) {
     if (!(this instanceof ModeOfOperationCTR)) {
@@ -481,11 +526,11 @@ class ModeOfOperationCTR {
     return encrypted;
   }
   /**
-   * @param {Bytes} plaintext
+   * @param {Bytes} ciphertext
    * @returns {Uint8Array}
    */
-  decrypt(plaintext) {
-    return this.encrypt(plaintext);
+  decrypt(ciphertext) {
+    return this.encrypt(ciphertext);
   }
 }
 
