@@ -100,6 +100,16 @@ The Advanced Encryption Standard (AES), also known by its original name Rijndael
 
 Data-crypto Supports all key sizes (128-bit, 192-bit and 256-bit) and all common modes of operation (CBC, CFB, CTR, ECB and OFB)
 
+- [UTF8](#UTF8)
+- [Keys](#Keys)
+- [CTR](#CTR)
+- [CBC](#CBC)
+- [CFB](#CFB)
+- [OFB](#OFB)
+- [ECB](#ECB)
+- [Block Cipher](#BlockCipher)
+
+
 ### UTF8
 
 Conver string to Array Buffer
@@ -130,10 +140,10 @@ The library work with `Array`, `Uint8Array` and `Buffer` objects as well as any 
 
 ```javascript
 // 128-bit, 192-bit and 256-bit keys
-// var key_128 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-// var key_192 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
-// var key_256 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
-// var key_128 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+var key_128 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+var key_192 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
+var key_256 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+var key_128 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 // or, you may use Uint8Array:
 var key_128_array = new Uint8Array(key_128);
@@ -146,18 +156,31 @@ var key_192_buffer = Buffer.from(key_192);
 var key_256_buffer = Buffer.from(key_256);
 ```
 
-## Common Modes of Operation
+#### What is a Key
+
+This seems to be a point of confusion for many people new to using encryption. You can think of the key as the _"password"_. However, these algorithms require the _"password"_ to be a specific length.
+
+With AES, there are three possible key lengths, 128-bit (16 bytes), 192-bit (24 bytes) or 256-bit (32 bytes). When you create an AES object, the key size is automatically detected, so it is important to pass in a key of the correct length.
+
+Often, you wish to provide a password of arbitrary length, for example, something easy to remember or write down. In these cases, you must come up with a way to transform the password into a key of a specific length. A **Password-Based Key Derivation Function** (PBKDF) is an algorithm designed for this exact purpose.
+
+Here is an example, using the popular (possibly obsolete?) pbkdf2:
+
+```javascript
+var pbkdf2 = require("pbkdf2");
+
+var key_128 = pbkdf2.pbkdf2Sync("password", "salt", 1, 128 / 8, "sha512");
+var key_192 = pbkdf2.pbkdf2Sync("password", "salt", 1, 192 / 8, "sha512");
+var key_256 = pbkdf2.pbkdf2Sync("password", "salt", 1, 256 / 8, "sha512");
+```
+
+Another possibility, is to use a hashing function, such as SHA256 to hash the password, but this method is vulnerable to [Rainbow Attacks](http://en.wikipedia.org/wiki/Rainbow_table), unless you use a [salt](<http://en.wikipedia.org/wiki/Salt_(cryptography)>).
+
+
+### Common Modes of Operation
 
 The modes of operation of block ciphers are configuration methods that allow those ciphers to work with large data streams, without the risk of compromising the provided security.
 
-## TOC
-
-- [CTR - Counter (recommended)](#CTR)
-- [import](#import)
-- [DES](#DES)
-- [Triple DES](#TripleDES)
-- [Pin Block](#PinBlock)
-- [AES](#AES)
 
 ### CTR
 
@@ -193,7 +216,9 @@ decryptedText.toString("ascii") == text;
 // "Text may be any length you wish, no padding is required."
 ```
 
-### CBC - Cipher-Block Chaining (recommended)
+### CBC
+
+CBC - Cipher-Block Chaining (recommended)
 
 ```javascript
 // An example 128-bit key
@@ -225,7 +250,9 @@ console.log(decryptedBytes.toString("ascii"));
 // "TextMustBe16Byte"
 ```
 
-### CFB - Cipher Feedback
+### CFB
+
+CFB - Cipher Feedback
 
 ```javascript
 // An example 128-bit key
@@ -259,7 +286,9 @@ console.log(decryptedBytes.toString("ascii"));
 // "TextMustBeAMultipleOfSegmentSize"
 ```
 
-### OFB - Output Feedback
+### OFB
+
+OFB - Output Feedback
 
 ```javascript
 // An example 128-bit key
@@ -292,7 +321,9 @@ console.log(decryptedBytes.toString("ascii"));
 // "Text may be any length you wish, no padding is required."
 ```
 
-### ECB - Electronic Codebook (NOT recommended)
+### ECB
+
+ECB - Electronic Codebook (NOT recommended)
 
 This mode is **not** recommended. Since, for a given key, the same plaintext block in produces the same ciphertext block out, this mode of operation can leak data, such as patterns. For more details and examples, see the Wikipedia article, [Electronic Codebook](http://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#Electronic_Codebook_.28ECB.29).
 
@@ -323,8 +354,8 @@ console.log(decryptedBytes.toString("ascii"));
 // "TextMustBe16Byte"
 ```
 
-## Block Cipher
-
+### BlockCipher
+Block Cipher
 You should usually use one of the above common modes of operation. Using the block cipher algorithm directly is also possible using **ECB** as that mode of operation is merely a thin wrapper.
 
 But this might be useful to experiment with custom modes of operation or play with block cipher algorithms.
@@ -361,24 +392,3 @@ But this might be useful to experiment with custom modes of operation or play wi
   // "ABlockIs16Bytes!"
 ```
 
-# Notes
-
-## What is a Key
-
-This seems to be a point of confusion for many people new to using encryption. You can think of the key as the _"password"_. However, these algorithms require the _"password"_ to be a specific length.
-
-With AES, there are three possible key lengths, 128-bit (16 bytes), 192-bit (24 bytes) or 256-bit (32 bytes). When you create an AES object, the key size is automatically detected, so it is important to pass in a key of the correct length.
-
-Often, you wish to provide a password of arbitrary length, for example, something easy to remember or write down. In these cases, you must come up with a way to transform the password into a key of a specific length. A **Password-Based Key Derivation Function** (PBKDF) is an algorithm designed for this exact purpose.
-
-Here is an example, using the popular (possibly obsolete?) pbkdf2:
-
-```javascript
-var pbkdf2 = require("pbkdf2");
-
-var key_128 = pbkdf2.pbkdf2Sync("password", "salt", 1, 128 / 8, "sha512");
-var key_192 = pbkdf2.pbkdf2Sync("password", "salt", 1, 192 / 8, "sha512");
-var key_256 = pbkdf2.pbkdf2Sync("password", "salt", 1, 256 / 8, "sha512");
-```
-
-Another possibility, is to use a hashing function, such as SHA256 to hash the password, but this method is vulnerable to [Rainbow Attacks](http://en.wikipedia.org/wiki/Rainbow_table), unless you use a [salt](<http://en.wikipedia.org/wiki/Salt_(cryptography)>).
