@@ -1,3 +1,6 @@
+// react-native
+global.Buffer = global.Buffer || require('buffer').Buffer
+
 const Des = require("./src/des");
 const TripleDes = require("./src/tripleDes");
 const Aes = require("./src/aes");
