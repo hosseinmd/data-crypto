@@ -336,16 +336,28 @@ function _encrypt(pt, rkb) {
   return cipher;
 }
 
+function encryption(input, rkb) {
+  let output = "";
+
+  for (let index = 0; index < input.length; index += 16) {
+    let hex16 = input.slice(index ? index : 0, index + 16);
+    hex16 += "0".repeat(16 - hex16.length);
+    output += _encrypt(hex16, rkb);
+  }
+
+  return output;
+}
+
 const Des = {
   encrypt(plainTextHex, keyHex) {
     let rkb = getRk(keyHex);
-    let cipher = _encrypt(plainTextHex, rkb);
-    return cipher;
+
+    return encryption(plainTextHex, rkb);
   },
   decrypt(cipher, keyHex) {
     let rkb = getRk(keyHex).reverse();
-    let textHex = _encrypt(cipher, rkb);
-    return textHex;
+
+    return encryption(cipher, rkb);
   },
 };
 module.exports = Des;
