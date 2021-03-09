@@ -341,7 +341,7 @@ function encryption(input, rkb) {
 
   for (let index = 0; index < input.length; index += 16) {
     let hex16 = input.slice(index ? index : 0, index + 16);
-    hex16 += "0".repeat(16 - hex16.length);
+    hex16 = hex16.padEnd(16, "0");
     output += _encrypt(hex16, rkb);
   }
 
