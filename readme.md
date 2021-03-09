@@ -41,6 +41,7 @@ const {
 ## DES
 
 The Data Encryption Standard (DES) is a symmetric-key algorithm for the encryption data. Key length is 8 bytes (56 bits).
+Mode is ECB
 
 ```js
 const keyhex = "abd219bc6c15181a";
@@ -109,7 +110,6 @@ Data-crypto Supports all key sizes (128-bit, 192-bit and 256-bit) and all common
 - [ECB](#ECB)
 - [Block Cipher](#BlockCipher)
 
-
 ### UTF8
 
 Conver string to Array Buffer
@@ -141,8 +141,66 @@ The library work with `Array`, `Uint8Array` and `Buffer` objects as well as any 
 ```javascript
 // 128-bit, 192-bit and 256-bit keys
 var key_128 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-var key_192 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
-var key_256 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+var key_192 = [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+];
+var key_256 = [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12,
+  13,
+  14,
+  15,
+  16,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22,
+  23,
+  24,
+  25,
+  26,
+  27,
+  28,
+  29,
+  30,
+  31,
+];
 var key_128 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 // or, you may use Uint8Array:
@@ -176,11 +234,9 @@ var key_256 = pbkdf2.pbkdf2Sync("password", "salt", 1, 256 / 8, "sha512");
 
 Another possibility, is to use a hashing function, such as SHA256 to hash the password, but this method is vulnerable to [Rainbow Attacks](http://en.wikipedia.org/wiki/Rainbow_table), unless you use a [salt](<http://en.wikipedia.org/wiki/Salt_(cryptography)>).
 
-
 ### Common Modes of Operation
 
 The modes of operation of block ciphers are configuration methods that allow those ciphers to work with large data streams, without the risk of compromising the provided security.
-
 
 ### CTR
 
@@ -355,6 +411,7 @@ console.log(decryptedBytes.toString("ascii"));
 ```
 
 ### BlockCipher
+
 Block Cipher
 You should usually use one of the above common modes of operation. Using the block cipher algorithm directly is also possible using **ECB** as that mode of operation is merely a thin wrapper.
 
@@ -362,33 +419,32 @@ But this might be useful to experiment with custom modes of operation or play wi
 
 ```javascript
 // the AES block cipher algorithm works on 16 byte bloca ks, no more, no less
-  var text = "ABlockIs16Bytes!";
-  var textAsBytes = Buffer.from(text, "ascii");
-  console.log(textAsBytes.toString("hex"));
-  // [65, 66, 108, 111, 99, 107, 73, 115, 49, 54, 66, 121, 116, 101, 115, 33]
+var text = "ABlockIs16Bytes!";
+var textAsBytes = Buffer.from(text, "ascii");
+console.log(textAsBytes.toString("hex"));
+// [65, 66, 108, 111, 99, 107, 73, 115, 49, 54, 66, 121, 116, 101, 115, 33]
 
-  // create an instance of the block cipher algorithm
-  var key = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3];
-  var aes = new Aes.AES(key);
+// create an instance of the block cipher algorithm
+var key = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3];
+var aes = new Aes.AES(key);
 
-  // encrypt...
-  var encryptedBytes = aes.encrypt(textAsBytes);
-  console.log(encryptedBytes);
-  // [136, 15, 199, 174, 118, 133, 233, 177, 143, 47, 42, 211, 96, 55, 107, 109]
+// encrypt...
+var encryptedBytes = aes.encrypt(textAsBytes);
+console.log(encryptedBytes);
+// [136, 15, 199, 174, 118, 133, 233, 177, 143, 47, 42, 211, 96, 55, 107, 109]
 
-  // To print or store the binary data, you may convert it to hex
-  var encryptedHex = Buffer.from(encryptedBytes);
-  console.log(encryptedHex.toString("hex"));
-  // "880fc7ae7685e9b18f2f2ad360376b6d"
+// To print or store the binary data, you may convert it to hex
+var encryptedHex = Buffer.from(encryptedBytes);
+console.log(encryptedHex.toString("hex"));
+// "880fc7ae7685e9b18f2f2ad360376b6d"
 
-  // decrypt...
-  var decryptedBytes = aes.decrypt(encryptedHex);
-  console.log(decryptedBytes);
-  // [65, 66, 108, 111, 99, 107, 73, 115, 49, 54, 66, 121, 116, 101, 115, 33]
+// decrypt...
+var decryptedBytes = aes.decrypt(encryptedHex);
+console.log(decryptedBytes);
+// [65, 66, 108, 111, 99, 107, 73, 115, 49, 54, 66, 121, 116, 101, 115, 33]
 
-  // decode the bytes back into our original text
-  var decryptedText = Buffer.from(decryptedBytes);
-  console.log(decryptedText.toString("ascii"));
-  // "ABlockIs16Bytes!"
+// decode the bytes back into our original text
+var decryptedText = Buffer.from(decryptedBytes);
+console.log(decryptedText.toString("ascii"));
+// "ABlockIs16Bytes!"
 ```
-

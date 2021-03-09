@@ -349,11 +349,23 @@ function encryption(input, rkb) {
 }
 
 const Des = {
+  /**
+   * Mode: ECB
+   * @param plainTextHex
+   * @param keyHex
+   * @returns
+   */
   encrypt(plainTextHex, keyHex) {
     let rkb = getRk(keyHex);
 
     return encryption(plainTextHex, rkb);
   },
+  /**
+   * Mode: ECB
+   * @param cipher Encrypted text
+   * @param keyHex
+   * @returns
+   */
   decrypt(cipher, keyHex) {
     let rkb = getRk(keyHex).reverse();
 
