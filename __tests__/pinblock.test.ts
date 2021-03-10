@@ -1,9 +1,9 @@
-const {
+import {
   pinBlockFormat0,
   pinBlockFormat1,
   pinBlockFormat2,
   pinBlockFormat3,
-} = require("../index");
+} from "../src";
 
 const pan = "4321987654321098";
 const pin = "1234";

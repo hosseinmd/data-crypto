@@ -1,23 +1,23 @@
-const { Aes } = require("../../");
+import { Aes } from "../../src";
 
 function bufferEquals(a, b) {
-  if (a.length != b.length) {
+  if (a.length !== b.length) {
     return false;
   }
-  for (var i = 0; i < a.length; i++) {
-    if (a[i] != b[i]) {
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) {
       return false;
     }
   }
   return true;
 }
 
-function makeTest(options) {
-  return function() {
-    var result = Buffer.from(options.incrementResult, "hex");
+function makeTest(options: any) {
+  return function () {
+    const result = Buffer.from(options.incrementResult, "hex");
 
-    if (options.hasOwnProperty("nullish")) {
-      var counter = new Aes.Counter(options.nullish);
+    if ("nullish" in options) {
+      const counter = new Aes.Counter(options.nullish);
       counter.increment();
       expect(
         bufferEquals(counter._counter, result),
@@ -25,8 +25,8 @@ function makeTest(options) {
       ).toBe(true);
     }
 
-    if (options.hasOwnProperty("number")) {
-      var counter = new Aes.Counter(options.number);
+    if ("number" in options) {
+      let counter = new Aes.Counter(options.number);
       counter.increment();
       expect(
         bufferEquals(counter._counter, result),
@@ -50,9 +50,9 @@ function makeTest(options) {
     }
 
     if (options.bytes) {
-      var bytes = Buffer.from(options.bytes, "hex");
+      const bytes = Buffer.from(options.bytes, "hex");
 
-      var counter = new Aes.Counter(bytes);
+      let counter = new Aes.Counter(bytes);
       counter.increment();
       expect(
         bufferEquals(counter._counter, result),

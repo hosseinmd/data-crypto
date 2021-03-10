@@ -1,6 +1,14 @@
 .prettierrc
 .gitattributes
 .gitignore
+.eslintignore
+.eslintrc.js
+yarn.lock
+.vscode/
 __tests__/
 node_modules/
-yarn.lock
+src/
+
+
+
+

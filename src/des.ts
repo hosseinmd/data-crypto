@@ -1,7 +1,7 @@
-const { xorBinary, permute, binaryToHex, hexToBinary } = require("./utils");
-const getRk = require("./getRk");
+import { xorBinary, permute, binaryToHex, hexToBinary } from "./utils";
+import getRk from "./getRk";
 
-function _encrypt(pt, rkb) {
+function _encrypt(pt: string, rkb: any[]) {
   //Hexadecimal to binary
   pt = hexToBinary(pt);
 
@@ -80,7 +80,7 @@ function _encrypt(pt, rkb) {
   let right = pt.substr(32, 32);
 
   //Expansion D-box Table
-  let exp_d = [
+  const exp_d = [
     32,
     1,
     2,
@@ -132,7 +132,7 @@ function _encrypt(pt, rkb) {
   ];
 
   //S-box Table
-  let s = [
+  const s = [
     [
       [14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
       [0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
@@ -185,7 +185,7 @@ function _encrypt(pt, rkb) {
   ];
 
   //Straight Permutation Table
-  let per = [
+  const per = [
     16,
     7,
     20,
@@ -222,28 +222,28 @@ function _encrypt(pt, rkb) {
 
   for (let i = 0; i < 16; i++) {
     //Expansion D-box
-    let right_expanded = permute(right, exp_d, 48);
+    const right_expanded = permute(right, exp_d, 48);
 
     //XOR RoundKey[i] and right_expanded
     let x = xorBinary(rkb[i], right_expanded);
 
     //S-boxes
     let op = "";
-    for (let i = 0; i < 8; i++) {
-      let row = 2 * parseInt(x[i * 6]) + parseInt(x[i * 6 + 5]);
-      let col =
-        8 * parseInt(x[i * 6 + 1]) +
-        4 * parseInt(x[i * 6 + 2]) +
-        2 * parseInt(x[i * 6 + 3]) +
-        parseInt(x[i * 6 + 4]);
-      let val = s[i][row][col];
-      op += parseInt(val / 8);
-      val = parseInt(val % 8);
-      op += parseInt(val / 4);
-      val = parseInt(val % 4);
-      op += parseInt(val / 2);
-      val = parseInt(val % 2);
-      op += parseInt(val);
+    for (let j = 0; j < 8; j++) {
+      const row = 2 * parseInt(x[j * 6], 10) + parseInt(x[j * 6 + 5], 10);
+      const col =
+        8 * parseInt(x[j * 6 + 1], 10) +
+        4 * parseInt(x[j * 6 + 2], 10) +
+        2 * parseInt(x[j * 6 + 3], 10) +
+        parseInt(x[j * 6 + 4], 10);
+      let val = s[j][row][col];
+      op += parseInt(String(val / 8), 10);
+      val = parseInt(String(val % 8), 10);
+      op += parseInt(String(val / 4), 10);
+      val = parseInt(String(val % 4), 10);
+      op += parseInt(String(val / 2), 10);
+      val = parseInt(String(val % 2), 10);
+      op += parseInt(String(val), 10);
     }
 
     //Straight D-box
@@ -253,15 +253,15 @@ function _encrypt(pt, rkb) {
     left = x;
 
     //Swapper
-    if (i != 15) {
-      let tempLeft = left;
+    if (i !== 15) {
+      const tempLeft = left;
       left = right;
       right = tempLeft;
     }
   }
 
   //Combination
-  let combine = left + right;
+  const combine = left + right;
 
   //Final Permutation Table
   const final_perm = [
@@ -336,7 +336,7 @@ function _encrypt(pt, rkb) {
   return cipher;
 }
 
-function encryption(input, rkb) {
+function encryption(input: string, rkb: any[]) {
   let output = "";
 
   for (let index = 0; index < input.length; index += 16) {
@@ -351,25 +351,27 @@ function encryption(input, rkb) {
 const Des = {
   /**
    * Mode: ECB
+   *
    * @param plainTextHex
    * @param keyHex
    * @returns
    */
-  encrypt(plainTextHex, keyHex) {
-    let rkb = getRk(keyHex);
+  encrypt(plainTextHex: string, keyHex: string): string {
+    const rkb = getRk(keyHex);
 
     return encryption(plainTextHex, rkb);
   },
   /**
    * Mode: ECB
+   *
    * @param cipher Encrypted text
    * @param keyHex
    * @returns
    */
-  decrypt(cipher, keyHex) {
-    let rkb = getRk(keyHex).reverse();
+  decrypt(cipher: string, keyHex: string): string {
+    const rkb = getRk(keyHex).reverse();
 
     return encryption(cipher, rkb);
   },
 };
-module.exports = Des;
+export default Des;

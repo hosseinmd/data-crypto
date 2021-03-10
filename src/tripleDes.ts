@@ -1,7 +1,7 @@
-const Des = require("./des");
+import Des from "./des";
 
-function splitKeys(keyHex) {
-  let key1 = keyHex.slice(0, 16);
+function splitKeys(keyHex: string) {
+  const key1 = keyHex.slice(0, 16);
   let key2 = keyHex.slice(16, 32);
   let key3 = keyHex.slice(32, 48);
 
@@ -17,11 +17,10 @@ function splitKeys(keyHex) {
 
 const TripleDes = {
   /**
-   *
    * @param {string} plainTextHex
    * @param {string} keyHex Key should be 16 , 32 or 48 characters
    */
-  encrypt(plainTextHex, keyHex) {
+  encrypt(plainTextHex: string, keyHex: any) {
     const { key1, key2, key3 } = splitKeys(keyHex);
 
     const firstPass = Des.encrypt(plainTextHex, key1);
@@ -33,11 +32,10 @@ const TripleDes = {
     return thirdPass;
   },
   /**
-   *
    * @param {string} cipher
    * @param {string} keyHex Key should be 16 , 32 or 48 characters
    */
-  decrypt(cipher, keyHex) {
+  decrypt(cipher: string, keyHex: any) {
     const { key1, key2, key3 } = splitKeys(keyHex);
 
     const firstPass = Des.decrypt(cipher, key3);
@@ -49,4 +47,4 @@ const TripleDes = {
     return thirdPass;
   },
 };
-module.exports = TripleDes;
+export default TripleDes;

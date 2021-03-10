@@ -1,11 +1,8 @@
+/* eslint-disable no-bitwise */
 "use strict";
-const {
-  coerceArray,
-  createArray,
-  copyArray,
-  convertToInt32,
-} = require("../utils");
-const {
+import { Bytes } from "../types";
+import { coerceArray, createArray, copyArray, convertToInt32 } from "../utils";
+import {
   numberOfRounds,
   rcon,
   S,
@@ -22,25 +19,18 @@ const {
   U2,
   U3,
   U4,
-} = require("./consts");
-
-/**
- * @typedef {Buffer | number[] | Uint8Array} Bytes
- */
+} from "./consts";
 
 class AES {
-  /**
-   * @param {Bytes} key
-   */
-  constructor(key) {
+  key: Uint8Array;
+  _Ke: number[][];
+  _Kd: number[][];
+  constructor(key: Bytes) {
     if (!(this instanceof AES)) {
       throw Error("AES must be instanitated with `new`");
     }
     this.key = coerceArray(key, true);
-    this._prepare();
-  }
-  _prepare() {
-    const rounds = numberOfRounds[this.key.length];
+    const rounds = numberOfRounds[(this.key.length as unknown) as any];
     if (rounds == null) {
       throw new Error("invalid key size (must be 16, 24 or 32 bytes)");
     }
@@ -120,7 +110,7 @@ class AES {
       }
     }
   }
-  encrypt(plaintext) {
+  encrypt(plaintext: Bytes) {
     if (plaintext.length != 16) {
       throw new Error("invalid plaintext size (must be 16 bytes)");
     }
@@ -156,7 +146,7 @@ class AES {
     }
     return result;
   }
-  decrypt(ciphertext) {
+  decrypt(ciphertext: Bytes) {
     if (ciphertext.length != 16) {
       throw new Error("invalid ciphertext size (must be 16 bytes)");
     }
@@ -193,14 +183,13 @@ class AES {
     return result;
   }
 }
-/**
- *  Mode Of Operation - Electonic Codebook (ECB)
- */
+/** Mode Of Operation - Electonic Codebook (ECB) */
 class ModeOfOperationECB {
-  /**
-   * @param {Bytes} key
-   */
-  constructor(key) {
+  description: string;
+  name: string;
+  _aes: AES;
+  /** @param key */
+  constructor(key: Bytes) {
     if (!(this instanceof ModeOfOperationECB)) {
       throw Error("AES must be instanitated with `new`");
     }
@@ -212,25 +201,25 @@ class ModeOfOperationECB {
    * @param {Bytes} plaintext
    * @returns {Uint8Array}
    */
-  encrypt(plaintext) {
-    plaintext = coerceArray(plaintext);
-    if (plaintext.length % 16 !== 0) {
+  encrypt(plaintext: Bytes): Uint8Array {
+    const _array = coerceArray(plaintext);
+    if (_array.length % 16 !== 0) {
       throw new Error("invalid plaintext size (must be multiple of 16 bytes)");
     }
-    const ciphertext = createArray(plaintext.length);
+    const ciphertext = createArray(_array.length);
     let block = createArray(16);
-    for (let i = 0; i < plaintext.length; i += 16) {
-      copyArray(plaintext, block, 0, i, i + 16);
+    for (let i = 0; i < _array.length; i += 16) {
+      copyArray(_array, block, 0, i, i + 16);
       block = this._aes.encrypt(block);
       copyArray(block, ciphertext, i);
     }
     return ciphertext;
   }
   /**
-   * @param {Bytes} ciphertext
+   * @param ciphertext
    * @returns {Uint8Array}
    */
-  decrypt(ciphertext) {
+  decrypt(ciphertext: Bytes): Uint8Array {
     ciphertext = coerceArray(ciphertext);
     if (ciphertext.length % 16 !== 0) {
       throw new Error("invalid ciphertext size (must be multiple of 16 bytes)");
@@ -245,15 +234,17 @@ class ModeOfOperationECB {
     return plaintext;
   }
 }
-/**
- *  Mode Of Operation - Cipher Block Chaining (CBC)
- */
+/** Mode Of Operation - Cipher Block Chaining (CBC) */
 class ModeOfOperationCBC {
+  description: string;
+  name: string;
+  _lastCipherblock: Uint8Array;
+  _aes: AES;
   /**
-   * @param {Bytes} key
-   * @param {Array<number>} [iv]
+   * @param key
+   * @param iv
    */
-  constructor(key, iv = createArray(16)) {
+  constructor(key: Bytes, iv: number[] | Uint8Array = createArray(16)) {
     if (!(this instanceof ModeOfOperationCBC)) {
       throw Error("AES must be instanitated with `new`");
     }
@@ -265,20 +256,17 @@ class ModeOfOperationCBC {
     this._lastCipherblock = coerceArray(iv, true);
     this._aes = new AES(key);
   }
-  /**
-   * @param {Bytes} plaintext
-   * @returns {Uint8Array}
-   */
-  encrypt(plaintext) {
+  /** @param plaintext */
+  encrypt(plaintext: Bytes): Uint8Array {
     plaintext = coerceArray(plaintext);
     if (plaintext.length % 16 !== 0) {
       throw new Error("invalid plaintext size (must be multiple of 16 bytes)");
     }
     const ciphertext = createArray(plaintext.length);
     const block = createArray(16);
-    for (var i = 0; i < plaintext.length; i += 16) {
+    for (let i = 0; i < plaintext.length; i += 16) {
       copyArray(plaintext, block, 0, i, i + 16);
-      for (var j = 0; j < 16; j++) {
+      for (let j = 0; j < 16; j++) {
         block[j] ^= this._lastCipherblock[j];
       }
       this._lastCipherblock = this._aes.encrypt(block);
@@ -286,11 +274,8 @@ class ModeOfOperationCBC {
     }
     return ciphertext;
   }
-  /**
-   * @param {Bytes} ciphertext
-   * @returns {Uint8Array}
-   */
-  decrypt(ciphertext) {
+  /** @param ciphertext */
+  decrypt(ciphertext: Bytes): Uint8Array {
     ciphertext = coerceArray(ciphertext);
     if (ciphertext.length % 16 !== 0) {
       throw new Error("invalid ciphertext size (must be multiple of 16 bytes)");
@@ -308,22 +293,29 @@ class ModeOfOperationCBC {
     return plaintext;
   }
 }
-/**
- *  Mode Of Operation - Cipher Feedback (CFB)
- */
+/** Mode Of Operation - Cipher Feedback (CFB) */
 class ModeOfOperationCFB {
+  description: string;
+  name: string;
+  segmentSize: number;
+  _shiftRegister: Uint8Array;
+  _aes: AES;
   /**
-   * @param {Bytes} key
-   * @param {Array<number>} [iv]
-   * @param {number} [segmentSize]
+   * @param key
+   * @param iv
+   * @param segmentSize
    */
-  constructor(key, iv = createArray(16), segmentSize = 1) {
+  constructor(
+    key: Bytes,
+    iv: number[] | Uint8Array = createArray(16),
+    segmentSize = 1,
+  ) {
     if (!(this instanceof ModeOfOperationCFB)) {
       throw Error("AES must be instanitated with `new`");
     }
     this.description = "Cipher Feedback";
     this.name = "cfb";
-    if (iv.length != 16) {
+    if (iv.length !== 16) {
       throw new Error("invalid initialation vector size (must be 16 size)");
     }
 
@@ -331,11 +323,8 @@ class ModeOfOperationCFB {
     this._shiftRegister = coerceArray(iv, true);
     this._aes = new AES(key);
   }
-  /**
-   * @param {Bytes} plaintext
-   * @returns {Uint8Array}
-   */
-  encrypt(plaintext) {
+  /** @param plaintext */
+  encrypt(plaintext: Bytes): Uint8Array {
     if (plaintext.length % this.segmentSize != 0) {
       throw new Error("invalid plaintext size (must be segmentSize bytes)");
     }
@@ -358,19 +347,16 @@ class ModeOfOperationCFB {
     }
     return encrypted;
   }
-  /**
-   * @param {Bytes} ciphertext
-   * @returns {Uint8Array}
-   */
-  decrypt(ciphertext) {
-    if (ciphertext.length % this.segmentSize != 0) {
+  /** @param ciphertext */
+  decrypt(ciphertext: Bytes): Uint8Array {
+    if (ciphertext.length % this.segmentSize !== 0) {
       throw new Error("invalid ciphertext size (must be segmentSize bytes)");
     }
     const plaintext = coerceArray(ciphertext, true);
     let xorSegment;
-    for (var i = 0; i < plaintext.length; i += this.segmentSize) {
+    for (let i = 0; i < plaintext.length; i += this.segmentSize) {
       xorSegment = this._aes.encrypt(this._shiftRegister);
-      for (var j = 0; j < this.segmentSize; j++) {
+      for (let j = 0; j < this.segmentSize; j++) {
         plaintext[i + j] ^= xorSegment[j];
       }
       // Shift the register
@@ -387,23 +373,24 @@ class ModeOfOperationCFB {
   }
 }
 
-/**
- *  Mode Of Operation - Output Feedback (OFB)
- */
+/** Mode Of Operation - Output Feedback (OFB) */
 class ModeOfOperationOFB {
+  description: string;
+  name: string;
+  _lastPrecipher: Uint8Array;
+  _lastPrecipherIndex: number;
+  _aes: AES;
   /**
    * @param {Bytes} key
-   * @param {Array<number>} [iv]
+   * @param iv
    */
-  constructor(key, iv) {
+  constructor(key: any, iv: number[] | Uint8Array = createArray(16)) {
     if (!(this instanceof ModeOfOperationOFB)) {
       throw Error("AES must be instanitated with `new`");
     }
     this.description = "Output Feedback";
     this.name = "ofb";
-    if (!iv) {
-      iv = createArray(16);
-    } else if (iv.length != 16) {
+    if (iv.length !== 16) {
       throw new Error("invalid initialation vector size (must be 16 bytes)");
     }
     this._lastPrecipher = coerceArray(iv, true);
@@ -411,10 +398,10 @@ class ModeOfOperationOFB {
     this._aes = new AES(key);
   }
   /**
-   * @param {Bytes} plaintext
+   * @param plaintext
    * @returns {Uint8Array}
    */
-  encrypt(plaintext) {
+  encrypt(plaintext: Bytes) {
     const encrypted = coerceArray(plaintext, true);
     for (let i = 0; i < encrypted.length; i++) {
       if (this._lastPrecipherIndex === 16) {
@@ -430,24 +417,20 @@ class ModeOfOperationOFB {
    * @param {Bytes} ciphertext
    * @returns {Uint8Array}
    */
-  decrypt(ciphertext) {
+  decrypt(ciphertext: any) {
     // Decryption is symetric
     return this.encrypt(ciphertext);
   }
 }
 
-/**
- *  Counter object for CTR common mode of operation
- */
+/** Counter object for CTR common mode of operation */
 class Counter {
-  constructor(initialValue) {
+  _counter: Bytes = [];
+  constructor(initialValue?: number | Buffer) {
     if (!(this instanceof Counter)) {
       throw Error("Counter must be instanitated with `new`");
     }
-    // We allow 0, but anything false-ish uses the default 1
-    if (initialValue !== 0 && !initialValue) {
-      initialValue = 1;
-    }
+    initialValue ??= 1;
     if (typeof initialValue === "number") {
       this._counter = createArray(16);
       this.setValue(initialValue);
@@ -455,8 +438,8 @@ class Counter {
       this.setBytes(initialValue);
     }
   }
-  setValue(value) {
-    if (typeof value !== "number" || parseInt(value) != value) {
+  setValue(value: string | number) {
+    if (typeof value !== "number" || parseInt(String(value), 10) !== value) {
       throw new Error("invalid counter value (must be an integer)");
     }
     // We cannot safely handle numbers beyond the safe range for integers
@@ -465,12 +448,12 @@ class Counter {
     }
     for (let index = 15; index >= 0; --index) {
       this._counter[index] = value % 256;
-      value = parseInt(value / 256);
+      value = parseInt(String(value / 256), 10);
     }
   }
-  setBytes(bytes) {
+  setBytes(bytes: Bytes) {
     bytes = coerceArray(bytes, true);
-    if (bytes.length != 16) {
+    if (bytes.length !== 16) {
       throw new Error("invalid counter bytes size (must be 16 bytes)");
     }
     this._counter = bytes;
@@ -487,15 +470,19 @@ class Counter {
   }
 }
 
-/**
- *  Mode Of Operation - Counter (CTR)
- */
+/** Mode Of Operation - Counter (CTR) */
 class ModeOfOperationCTR {
+  description: string;
+  name: string;
+  _counter: Counter;
+  _remainingCounter: null | Uint8Array;
+  _remainingCounterIndex: number;
+  _aes: AES;
   /**
    * @param {Bytes} key
    * @param {Counter} [counter]
    */
-  constructor(key, counter) {
+  constructor(key: any, counter: Counter) {
     if (!(this instanceof ModeOfOperationCTR)) {
       throw Error("AES must be instanitated with `new`");
     }
@@ -513,7 +500,7 @@ class ModeOfOperationCTR {
    * @param {Bytes} plaintext
    * @returns {Uint8Array}
    */
-  encrypt(plaintext) {
+  encrypt(plaintext: Bytes) {
     const encrypted = coerceArray(plaintext, true);
     for (let i = 0; i < encrypted.length; i++) {
       if (this._remainingCounterIndex === 16) {
@@ -521,7 +508,9 @@ class ModeOfOperationCTR {
         this._remainingCounterIndex = 0;
         this._counter.increment();
       }
-      encrypted[i] ^= this._remainingCounter[this._remainingCounterIndex++];
+      encrypted[i] ^= (this._remainingCounter as Uint8Array)[
+        this._remainingCounterIndex++
+      ];
     }
     return encrypted;
   }
@@ -529,7 +518,7 @@ class ModeOfOperationCTR {
    * @param {Bytes} ciphertext
    * @returns {Uint8Array}
    */
-  decrypt(ciphertext) {
+  decrypt(ciphertext: any) {
     return this.encrypt(ciphertext);
   }
 }
@@ -538,18 +527,18 @@ class ModeOfOperationCTR {
 // Padding
 
 // See:https://tools.ietf.org/html/rfc2315
-function pkcs7pad(data) {
+function pkcs7pad(data: Bytes) {
   data = coerceArray(data, true);
   const padder = 16 - (data.length % 16);
   const result = createArray(data.length + padder);
   copyArray(data, result);
-  for (var i = data.length; i < result.length; i++) {
+  for (let i = data.length; i < result.length; i++) {
     result[i] = padder;
   }
   return result;
 }
 
-function pkcs7strip(data) {
+function pkcs7strip(data: Bytes) {
   data = coerceArray(data, true);
   if (data.length < 16) {
     throw new Error("PKCS#7 invalid length");
@@ -561,7 +550,7 @@ function pkcs7strip(data) {
   }
 
   const length = data.length - padder;
-  for (var i = 0; i < padder; i++) {
+  for (let i = 0; i < padder; i++) {
     if (data[length + i] !== padder) {
       throw new Error("PKCS#7 invalid padding byte");
     }
@@ -602,6 +591,6 @@ const Aes = {
   },
 };
 
-module.exports = Aes;
+export default Aes;
 
 // global.Buffer = global.Buffer || require('buffer').Buffer

@@ -1,6 +1,6 @@
-const { permute, hexToBinary } = require("./utils");
+import { permute, hexToBinary } from "./utils";
 
-function shift_left(k, shifts) {
+function shift_left(k: string, shifts: number) {
   let s = "";
   for (let i = 0; i < shifts; i++) {
     for (let j = 1; j < 28; j++) {
@@ -13,7 +13,7 @@ function shift_left(k, shifts) {
   return k;
 }
 
-module.exports = function getRk(keyHex) {
+export default function getRk(keyHex: string): string[] {
   const _KEY_PERMUTE = [
     57,
     49,
@@ -124,7 +124,7 @@ module.exports = function getRk(keyHex) {
   ];
   const _SHIFT_TABLE = [1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1];
 
-  key = hexToBinary(keyHex);
+  let key = hexToBinary(keyHex);
 
   //Parity bit drop table
 
@@ -139,19 +139,19 @@ module.exports = function getRk(keyHex) {
   let left = key.substr(0, 28);
   let right = key.substr(28, 28);
 
-  let rkb = []; //rkb for RoundKeys in binary
+  const rkb: string[] = []; //rkb for RoundKeys in binary
   for (let i = 0; i < 16; i++) {
     //Shifting
     left = shift_left(left, _SHIFT_TABLE[i]);
     right = shift_left(right, _SHIFT_TABLE[i]);
 
     //Combining
-    let combine = left + right;
+    const combine = left + right;
 
     //Key Compression
-    let RoundKey = permute(combine, _KEY_COMP, 48);
+    const RoundKey = permute(combine, _KEY_COMP, 48);
 
     rkb.push(RoundKey);
   }
   return rkb;
-};
+}
