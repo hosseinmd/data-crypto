@@ -20,7 +20,7 @@ function pinBlockFormat0(PAN: string, PIN: string) {
 
   const preparedPIN = "0" + PINLen.toString(16) + PIN.padEnd(14, "F");
 
-  const preparedPAN = PAN.slice(3, 15).padStart(16, "0");
+  const preparedPAN = PAN.slice(-13, -1).padStart(16, "0");
 
   const clearPINblock = xor(preparedPIN, preparedPAN);
 
